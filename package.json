@@ -1,10 +1,10 @@
 {
   "name": "gendiff-fiv",
-  "version": "0.0.1",
+  "version": "0.1.2",
   "description": "gendiff",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "babel-node": "babel-node",
     "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
     "prepublish": "npm run build",
@@ -19,17 +19,23 @@
   },
   "author": "Irina Fomina",
   "license": "ISC",
+  "jest": {
+    "testEnvironment": "node"
+  },
   "devDependencies": {
     "babel-cli": "*",
     "babel-core": "*",
+    "babel-eslint": "*",
     "babel-preset-env": "*",
     "babel-preset-stage-0": "*",
     "eslint": "*",
     "eslint-config-airbnb-base": "*",
     "eslint-plugin-import": "*",
-    "babel-eslint": "*"
+    "jest": "^22.0.0",
+    "jest-cli": "^22.0.0"
   },
   "dependencies": {
-    "commander": "^2.12.2"
+    "commander": "^2.12.2",
+    "fs": "0.0.1-security"
   }
 }
