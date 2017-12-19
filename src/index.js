@@ -1,19 +1,31 @@
 import fs from 'fs';
+import _ from 'lodash';
 
-export default (first, second) => {
-  const fData = JSON.parse(fs.readFileSync(first));
-  const sData = JSON.parse(fs.readFileSync(second));
+export default (firstFile, secondFile) => {
+  const firstFileData = JSON.parse(fs.readFileSync(firstFile));
+  const secondFileData = JSON.parse(fs.readFileSync(secondFile));
 
-  const commonKeys = Object.keys({ ...fData, ...sData });
+  const keys = _.union(Object.keys(firstFileData), Object.keys(secondFileData));
 
-  const diff = commonKeys.reduce((acc, key) => {
-    const before = fData[key];
-    const after = sData[key];
+  const diff = keys.reduce((acc, key) => {
+    const firstFileValue = firstFileData[key];
+    const secondFileValue = secondFileData[key];
 
-    if (before === after) acc[`  ${key}`] = before;
-    if (!before || before !== after) acc[`+ ${key}`] = after;
-    if (!after || before !== after) acc[`- ${key}`] = before;
-    return acc;
+    if (firstFileValue === secondFileValue) {
+      return { ...acc, [`  ${key}`]: firstFileValue };
+    }
+    if (!firstFileValue) {
+      return { ...acc, [`+ ${key}`]: secondFileValue };
+    }
+    if (!secondFileValue) {
+      return { ...acc, [`- ${key}`]: firstFileValue };
+    }
+
+    const keyDiff = {};
+    keyDiff[`- ${key}`] = firstFileValue;
+    keyDiff[`+ ${key}`] = secondFileValue;
+
+    return { ...acc, ...keyDiff };
   }, {});
 
   return diff;

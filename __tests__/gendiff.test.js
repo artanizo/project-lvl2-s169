@@ -1,6 +1,6 @@
 import gendiff from '../src';
 
-test('should work', () => {
+test('json files difference_should match', () => {
   const expected = {
     '  host': 'hexlet.io',
     '+ timeout': 20,
