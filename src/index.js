@@ -7,7 +7,7 @@ const parseMap = {
   '.json': JSON.parse,
   '.yml': yaml.safeLoad,
   '.yaml': yaml.safeLoad,
-}
+};
 
 const parse = (fileExtension, fileData) => parseMap[fileExtension](fileData);
 
