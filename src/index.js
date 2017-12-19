@@ -1,9 +1,19 @@
 import fs from 'fs';
+import path from 'path';
+import yaml from 'js-yaml';
 import _ from 'lodash';
 
+const parseMap = {
+  '.json': JSON.parse,
+  '.yml': yaml.safeLoad,
+  '.yaml': yaml.safeLoad,
+}
+
+const parse = (fileExtension, fileData) => parseMap[fileExtension](fileData);
+
 export default (firstFile, secondFile) => {
-  const firstFileData = JSON.parse(fs.readFileSync(firstFile));
-  const secondFileData = JSON.parse(fs.readFileSync(secondFile));
+  const firstFileData = parse(path.extname(firstFile), fs.readFileSync(firstFile));
+  const secondFileData = parse(path.extname(secondFile), fs.readFileSync(secondFile));
 
   const keys = _.union(Object.keys(firstFileData), Object.keys(secondFileData));
 
