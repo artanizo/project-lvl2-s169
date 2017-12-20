@@ -10,3 +10,4 @@ util.version('0.2.0')
   .action((firstConfig, secondConfig) => console.log(gendiff(firstConfig, secondConfig)))
   .parse(process.argv);
 
+if (!util.args.length) util.help();

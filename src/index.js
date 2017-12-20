@@ -38,5 +38,5 @@ export default (firstFile, secondFile) => {
     return { ...acc, ...keyDiff };
   }, {});
 
-  return diff;
+  return JSON.stringify(diff, null, 4);
 };
