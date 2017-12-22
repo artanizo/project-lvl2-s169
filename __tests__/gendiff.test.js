@@ -1,12 +1,40 @@
 import gendiff from '../src';
 
-const flatExpected = '{\n' +
-'    host: hexlet.io\n' +
-'  - timeout: 50\n' +
-'  + timeout: 20\n' +
-'  - proxy: 123.234.53.22\n' +
-'  + verbose: true\n' +
-'}';
+const flatExpected =
+`{
+    host: hexlet.io
+  - timeout: 50
+  + timeout: 20
+  - proxy: 123.234.53.22
+  + verbose: true
+}`;
+
+const treeExpected =
+`{
+    common: {
+      setting1: Value 1
+    - setting2: 200
+      setting3: true
+    - setting6: {
+          key: value
+      }
+    + setting4: blah blah
+    + setting5: {
+          key5: value5
+      }
+    }
+    group1: {
+    - baz: bas
+    + baz: bars
+      foo: bar
+    }
+  - group2: {
+      abc: 12345
+    }
+  + group3: {
+      fee: 100500
+    }
+}`;
 
 test('json flat_should match', () => {
   const diff = gendiff('__tests__/__fixtures__/before.json', '__tests__/__fixtures__/after.json');
@@ -21,4 +49,19 @@ test('yaml flat_should match', () => {
 test('ini flat_shoul match', () => {
   const diff = gendiff('__tests__/__fixtures__/before.ini', '__tests__/__fixtures__/after.ini');
   expect(diff).toBe(flatExpected);
+});
+
+test('json tree_shoul match', () => {
+  const diff = gendiff('__tests__/__fixtures__/before_tree.json', '__tests__/__fixtures__/after_tree.json');
+  expect(diff).toBe(treeExpected);
+});
+
+test('ini tree_shoul match', () => {
+  const diff = gendiff('__tests__/__fixtures__/before_tree.ini', '__tests__/__fixtures__/after_tree.ini');
+  expect(diff).toBe(treeExpected);
+});
+
+test('yml tree_shoul match', () => {
+  const diff = gendiff('__tests__/__fixtures__/before_tree.yml', '__tests__/__fixtures__/after_tree.yml');
+  expect(diff).toBe(treeExpected);
 });

@@ -3,6 +3,7 @@ import path from 'path';
 import yaml from 'js-yaml';
 import ini from 'ini';
 import _ from 'lodash';
+import astToString from './Rept/rept';
 
 const parseMap = {
   '.json': JSON.parse,
@@ -14,40 +15,56 @@ const parseMap = {
 const valuesActionMap = [
   {
     check: (firstVal, secondVal) => firstVal === secondVal,
-    toString: (key, firstVal) => `    ${key}: ${firstVal}`,
+    type: 'unchanged',
   },
   {
     check: firstVal => !firstVal,
-    toString: (key, firstVal, secondVal) => `  + ${key}: ${secondVal}`,
+    type: 'added',
   },
   {
     check: (firstVal, secondVal) => !secondVal,
-    toString: (key, firstVal) => `  - ${key}: ${firstVal}`,
+    type: 'deleted',
+  },
+  {
+    check: (firstVal, secondVal) => firstVal && secondVal &&
+      _.isObject(firstVal) && _.isObject(secondVal),
+    type: 'complex',
   },
   {
     check: (firstVal, secondVal) => firstVal && secondVal && firstVal !== secondVal,
-    toString: (key, firstVal, secondVal) => `  - ${key}: ${firstVal}\n  + ${key}: ${secondVal}`,
+    type: 'changed',
   },
 ];
 
 const parse = (fileExtension, fileData) => parseMap[fileExtension](fileData);
 
-const getToStringMethod = (firstVal, secondVal) =>
+const getType = (firstVal, secondVal) =>
   _.find(valuesActionMap, ({ check }) => check(firstVal, secondVal));
+
+const buildAst = (obj1 = {}, obj2 = {}, level = 1) => {
+  const keys = _.union(Object.keys(obj1), Object.keys(obj2));
+
+  return keys.reduce((acc, key) => {
+    const prevValue = obj1[key];
+    const currentValue = obj2[key];
+
+    const { type } = getType(prevValue, currentValue);
+    const children = type === 'complex' ? buildAst(prevValue, currentValue, level + 1) : [];
+    return [...acc, {
+      key,
+      type,
+      level,
+      prevValue,
+      currentValue,
+      children,
+    }];
+  }, []);
+};
 
 export default (firstFile, secondFile) => {
   const firstFileData = parse(path.extname(firstFile), fs.readFileSync(firstFile, 'utf-8'));
   const secondFileData = parse(path.extname(secondFile), fs.readFileSync(secondFile, 'utf-8'));
 
-  const keys = _.union(Object.keys(firstFileData), Object.keys(secondFileData));
-
-  const diff = keys.reduce((acc, key) => {
-    const firstFileValue = firstFileData[key];
-    const secondFileValue = secondFileData[key];
-
-    const { toString } = getToStringMethod(firstFileValue, secondFileValue);
-    return `${acc}\n${toString(key, firstFileValue, secondFileValue)}`;
-  }, '');
-
-  return `{${diff}\n}`;
+  const ast = buildAst(firstFileData, secondFileData);
+  return `{${astToString(ast)}\n}`;
 };
