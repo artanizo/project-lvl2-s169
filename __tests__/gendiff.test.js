@@ -66,7 +66,7 @@ test('yml tree_shoul match', () => {
   expect(diff).toBe(treeExpected);
 });
 
-const plain = `Property 'common.setting2' was removed
+const plainFormatExpected = `Property 'common.setting2' was removed
 Property 'common.setting6' was removed
 Property 'common.setting4' was added with value: 'blah blah'
 Property 'common.setting5' was added with complex value
@@ -74,7 +74,50 @@ Property 'group1.baz' was updated. From 'bas' to 'bars'
 Property 'group2' was removed
 Property 'group3' was added with complex value`;
 
-test('plain json', () => {
+test('plain format', () => {
   const diff = gendiff('__tests__/__fixtures__/before_tree.json', '__tests__/__fixtures__/after_tree.json', 'plain');
-  expect(diff).toBe(plain);
+  expect(diff).toBe(plainFormatExpected);
+});
+
+const jsonFormatExpected = [
+  {
+    key: 'host',
+    type: 'unchanged',
+    level: 1,
+    prevValue: 'hexlet.io',
+    currentValue: 'hexlet.io',
+    children: [],
+    parents: [],
+  },
+  {
+    key: 'timeout',
+    type: 'changed',
+    level: 1,
+    prevValue: 50,
+    currentValue: 20,
+    children: [],
+    parents: [],
+  },
+  {
+    key: 'proxy',
+    type: 'deleted',
+    level: 1,
+    prevValue: '123.234.53.22',
+    children: [],
+    parents: [],
+  },
+  {
+    key: 'verbose',
+    type: 'added',
+    level: 1,
+    currentValue: true,
+    children: [],
+    parents: [],
+  },
+];
+
+test('json format', () => {
+  const diff = gendiff('__tests__/__fixtures__/before.json', '__tests__/__fixtures__/after.json', 'json');
+  console.log(diff);
+  expect(JSON.parse(diff)).toMatchObject(jsonFormatExpected);
 });

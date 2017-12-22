@@ -57,7 +57,7 @@ const buildAst = (obj1 = {}, obj2 = {}, level = 1, parents = []) => {
       prevValue,
       currentValue,
       children,
-      parents: [...parents, key],
+      parents,
     }];
   }, []);
 };

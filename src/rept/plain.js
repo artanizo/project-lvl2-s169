@@ -6,7 +6,7 @@ const getNodeValueString = value => (!_.isObject(value) ? value : 'complex value
 
 const getRept = (ast) => {
   const reptArr = ast.reduce((acc, node) => {
-    const fullKey = [...node.parents].join('.');
+    const fullKey = [...node.parents, node.key].join('.');
     switch (node.type) {
       case 'added': {
         const newValue = !_.isObject(node.currentValue) ? `value: '${node.currentValue}'` : 'complex value';
