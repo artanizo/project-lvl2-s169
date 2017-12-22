@@ -51,4 +51,4 @@ const getRept = (ast) => {
   return _.flatten(reptArr).join(newLine);
 };
 
-export default getRept;
+export default ast => `{${newLine}${getRept(ast)}${newLine}}`;

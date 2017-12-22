@@ -3,7 +3,7 @@ import path from 'path';
 import yaml from 'js-yaml';
 import ini from 'ini';
 import _ from 'lodash';
-import astToString from './rept/rept';
+import astToString from './rept/report';
 
 const parseMap = {
   '.json': JSON.parse,
@@ -41,7 +41,7 @@ const parse = (fileExtension, fileData) => parseMap[fileExtension](fileData);
 const getType = (firstVal, secondVal) =>
   _.find(valuesActionMap, ({ check }) => check(firstVal, secondVal));
 
-const buildAst = (obj1 = {}, obj2 = {}, level = 1) => {
+const buildAst = (obj1 = {}, obj2 = {}, level = 1, parents = []) => {
   const keys = _.union(Object.keys(obj1), Object.keys(obj2));
 
   return keys.reduce((acc, key) => {
@@ -49,7 +49,7 @@ const buildAst = (obj1 = {}, obj2 = {}, level = 1) => {
     const currentValue = obj2[key];
 
     const { type } = getType(prevValue, currentValue);
-    const children = type === 'complex' ? buildAst(prevValue, currentValue, level + 1) : [];
+    const children = type === 'complex' ? buildAst(prevValue, currentValue, level + 1, [...parents, key]) : [];
     return [...acc, {
       key,
       type,
@@ -57,14 +57,15 @@ const buildAst = (obj1 = {}, obj2 = {}, level = 1) => {
       prevValue,
       currentValue,
       children,
+      parents: [...parents, key],
     }];
   }, []);
 };
 
-export default (firstFile, secondFile) => {
+export default (firstFile, secondFile, format = 'json') => {
   const firstFileData = parse(path.extname(firstFile), fs.readFileSync(firstFile, 'utf-8'));
   const secondFileData = parse(path.extname(secondFile), fs.readFileSync(secondFile, 'utf-8'));
 
   const ast = buildAst(firstFileData, secondFileData);
-  return `{\n${astToString(ast)}\n}`;
+  return astToString(ast, format);
 };

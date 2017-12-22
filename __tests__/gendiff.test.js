@@ -65,3 +65,16 @@ test('yml tree_shoul match', () => {
   const diff = gendiff('__tests__/__fixtures__/before_tree.yml', '__tests__/__fixtures__/after_tree.yml');
   expect(diff).toBe(treeExpected);
 });
+
+const plain = `Property 'common.setting2' was removed
+Property 'common.setting6' was removed
+Property 'common.setting4' was added with value: 'blah blah'
+Property 'common.setting5' was added with complex value
+Property 'group1.baz' was updated. From 'bas' to 'bars'
+Property 'group2' was removed
+Property 'group3' was added with complex value`;
+
+test('plain json', () => {
+  const diff = gendiff('__tests__/__fixtures__/before_tree.json', '__tests__/__fixtures__/after_tree.json', 'plain');
+  expect(diff).toBe(plain);
+});
