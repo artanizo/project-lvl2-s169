@@ -1,8 +1,8 @@
-import getJsonRept from './json';
+import getDefaultRept from './default';
 import getPlainRept from './plain';
 
 const formatMap = {
-  json: getJsonRept,
+  default: getDefaultRept,
   plain: getPlainRept,
 };
 

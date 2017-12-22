@@ -62,7 +62,7 @@ const buildAst = (obj1 = {}, obj2 = {}, level = 1, parents = []) => {
   }, []);
 };
 
-export default (firstFile, secondFile, format = 'json') => {
+export default (firstFile, secondFile, format = 'default') => {
   const firstFileData = parse(path.extname(firstFile), fs.readFileSync(firstFile, 'utf-8'));
   const secondFileData = parse(path.extname(secondFile), fs.readFileSync(secondFile, 'utf-8'));
 
