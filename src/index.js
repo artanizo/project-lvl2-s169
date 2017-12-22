@@ -3,7 +3,7 @@ import path from 'path';
 import yaml from 'js-yaml';
 import ini from 'ini';
 import _ from 'lodash';
-import astToString from './Rept/rept';
+import astToString from './rept/rept';
 
 const parseMap = {
   '.json': JSON.parse,
@@ -66,5 +66,5 @@ export default (firstFile, secondFile) => {
   const secondFileData = parse(path.extname(secondFile), fs.readFileSync(secondFile, 'utf-8'));
 
   const ast = buildAst(firstFileData, secondFileData);
-  return `{${astToString(ast)}\n}`;
+  return `{\n${astToString(ast)}\n}`;
 };
