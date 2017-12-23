@@ -2,16 +2,17 @@ import _ from 'lodash';
 
 const newLine = '\n';
 
-const getNodeValueString = value => (!_.isObject(value) ? value : 'complex value');
+const getNodeValueString = (value, withPrefix = false) => {
+  const outValue = withPrefix ? `value: '${value}'` : value;
+  return (!_.isObject(value) ? outValue : 'complex value');
+};
 
 const getRept = (ast) => {
   const reptArr = ast.reduce((acc, node) => {
     const fullKey = [...node.parents, node.key].join('.');
     switch (node.type) {
-      case 'added': {
-        const newValue = !_.isObject(node.currentValue) ? `value: '${node.currentValue}'` : 'complex value';
-        return [...acc, `Property '${fullKey}' was added with ${newValue}`];
-      }
+      case 'added':
+        return [...acc, `Property '${fullKey}' was added with ${getNodeValueString(node.currentValue, true)}`];
       case 'deleted':
         return [...acc, `Property '${fullKey}' was removed`];
       case 'changed':

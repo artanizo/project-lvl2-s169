@@ -63,9 +63,12 @@ const buildAst = (obj1 = {}, obj2 = {}, level = 1, parents = []) => {
 };
 
 export default (firstFile, secondFile, format = 'default') => {
-  const firstFileData = parse(path.extname(firstFile), fs.readFileSync(firstFile, 'utf-8'));
-  const secondFileData = parse(path.extname(secondFile), fs.readFileSync(secondFile, 'utf-8'));
+  const firstFileData = fs.readFileSync(firstFile, 'utf-8');
+  const secondFileData = fs.readFileSync(secondFile, 'utf-8');
 
-  const ast = buildAst(firstFileData, secondFileData);
+  const firstFileDataParsed = parse(path.extname(firstFile), firstFileData);
+  const secondFileDataParsed = parse(path.extname(secondFile), secondFileData);
+
+  const ast = buildAst(firstFileDataParsed, secondFileDataParsed);
   return astToString(ast, format);
 };
