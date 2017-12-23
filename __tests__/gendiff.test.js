@@ -118,6 +118,5 @@ const jsonFormatExpected = [
 
 test('json format', () => {
   const diff = gendiff('__tests__/__fixtures__/before.json', '__tests__/__fixtures__/after.json', 'json');
-  console.log(diff);
   expect(JSON.parse(diff)).toMatchObject(jsonFormatExpected);
 });

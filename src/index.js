@@ -3,7 +3,7 @@ import path from 'path';
 import yaml from 'js-yaml';
 import ini from 'ini';
 import _ from 'lodash';
-import astToString from './rept/report';
+import astToString from './reporters';
 
 const parseMap = {
   '.json': JSON.parse,
