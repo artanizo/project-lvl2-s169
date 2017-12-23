@@ -26,29 +26,29 @@ const getNodeString = (key, value, sign, level) => {
   return [`${indent}${sign}${key}: ${getNodeValueString(level, value)}`];
 };
 
-const getRept = (ast) => {
-  const reptArr = ast.map((node) => {
-    switch (node.type) {
-      case 'unchanged':
-        return getNodeString(node.key, node.currentValue, '  ', node.level);
-      case 'added':
-        return getNodeString(node.key, node.currentValue, '+ ', node.level);
-      case 'deleted':
-        return getNodeString(node.key, node.prevValue, '- ', node.level);
-      case 'changed': {
-        const before = getNodeString(node.key, node.prevValue, '- ', node.level);
-        const after = getNodeString(node.key, node.currentValue, '+ ', node.level);
-        return [before, after];
-      }
-      case 'complex': {
-        const indent = ' '.repeat(node.level * 2);
-        return [`${indent}  ${node.key}: {${newLine}${getRept(node.children)}${newLine}  ${indent}}`];
-      }
-      default:
-        return '';
-    }
+const getReport = (ast) => {
+  const nodeToStringMap = {
+    unchanged: node => getNodeString(node.key, node.currentValue, '  ', node.level),
+    added: node => getNodeString(node.key, node.currentValue, '+ ', node.level),
+    deleted: node => getNodeString(node.key, node.prevValue, '- ', node.level),
+    changed: (node) => {
+      const before = getNodeString(node.key, node.prevValue, '- ', node.level);
+      const after = getNodeString(node.key, node.currentValue, '+ ', node.level);
+      return [before, after];
+    },
+    complex: (node) => {
+      const indent = ' '.repeat(node.level * 2);
+      return [`${indent}  ${node.key}: {${newLine}${getReport(node.children)}${newLine}  ${indent}}`];
+    },
+  };
+
+  const reportArr = ast.map((node) => {
+    const toString = nodeToStringMap[node.type];
+    return toString(node);
   });
-  return _.flatten(reptArr).join(newLine);
+
+  return _.flatten(reportArr).join(newLine);
 };
 
-export default ast => `{${newLine}${getRept(ast)}${newLine}}`;
+export default ast => ['{', getReport(ast), '}'].join(newLine);
+

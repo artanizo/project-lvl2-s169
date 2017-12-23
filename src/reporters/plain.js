@@ -7,23 +7,23 @@ const getNodeValueString = (value, withPrefix = false) => {
   return (!_.isObject(value) ? outValue : 'complex value');
 };
 
-const getRept = (ast) => {
-  const reptArr = ast.reduce((acc, node) => {
-    const fullKey = [...node.parents, node.key].join('.');
-    switch (node.type) {
-      case 'added':
-        return [...acc, `Property '${fullKey}' was added with ${getNodeValueString(node.currentValue, true)}`];
-      case 'deleted':
-        return [...acc, `Property '${fullKey}' was removed`];
-      case 'changed':
-        return [...acc, `Property '${fullKey}' was updated. From '${getNodeValueString(node.prevValue)}' to '${getNodeValueString(node.currentValue)}'`];
-      case 'complex':
-        return [...acc, getRept(node.children)];
-      default:
-        return acc;
-    }
+const getFullKey = node => [...node.parents, node.key].join('.');
+
+const getReport = (ast) => {
+  const nodeToStringMap = {
+    added: node => `Property '${getFullKey(node)}' was added with ${getNodeValueString(node.currentValue, true)}`,
+    deleted: node => `Property '${getFullKey(node)}' was removed`,
+    changed: node => `Property '${getFullKey(node)}' was updated. From '${getNodeValueString(node.prevValue)}' to '${getNodeValueString(node.currentValue)}'`,
+    unchanged: () => '',
+    complex: node => getReport(node.children),
+  };
+
+  const reportArr = ast.reduce((acc, node) => {
+    const toString = nodeToStringMap[node.type];
+    return [...acc, toString(node)];
   }, []);
-  return _.flatten(reptArr).join(newLine);
+
+  return _.compact(reportArr).join(newLine);
 };
 
-export default getRept;
+export default getReport;
